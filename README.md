@@ -2,7 +2,6 @@
 
 A full-stack, comprehensive web application designed to track student progress, visualize learning insights, and provide mentors with actionable data. Built with modern web technologies, this platform delivers a premium, distraction-free learning experience.
 
-![Dashboard Preview](https://via.placeholder.com/1200x600.png?text=Progressive+Student+Dashboard) <!-- Replace with an actual screenshot -->
 
 ---
 
