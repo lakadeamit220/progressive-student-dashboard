@@ -5,12 +5,21 @@ import Sidebar from '../components/Sidebar';
 import SummaryCard from '../components/SummaryCard';
 import { Clock, CheckCircle, BookOpen } from 'lucide-react';
 
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend 
+} from 'recharts';
+
+const COLORS = ['#a855f7', '#3b82f6', '#ec4899', '#14b8a6', '#f59e0b'];
+
 const Dashboard = () => {
   const { user } = useAuthStore();
   const [metrics, setMetrics] = useState({
     totalTimeSpent: 0,
     completedLessons: 0,
-    coursesActive: 0
+    coursesActive: 0,
+    trendData: [],
+    distributionData: []
   });
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +30,9 @@ const Dashboard = () => {
         setMetrics({
           totalTimeSpent: data.totalTimeSpent,
           completedLessons: data.completedLessons,
-          coursesActive: data.distributionData.length
+          coursesActive: data.distributionData.length,
+          trendData: data.trendData,
+          distributionData: data.distributionData
         });
       } catch (error) {
         console.error('Failed to fetch dashboard data', error);
@@ -53,32 +64,83 @@ const Dashboard = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-              <SummaryCard 
-                title="Total Time Spent" 
-                value={`${metrics.totalTimeSpent} min`}
-                icon={<Clock className="w-6 h-6" />}
-                colorClass="bg-blue-500"
-              />
-              <SummaryCard 
-                title="Lessons Completed" 
-                value={metrics.completedLessons}
-                icon={<CheckCircle className="w-6 h-6" />}
-                colorClass="bg-purple-500"
-              />
-              <SummaryCard 
-                title="Active Courses" 
-                value={metrics.coursesActive}
-                icon={<BookOpen className="w-6 h-6" />}
-                colorClass="bg-pink-500"
-              />
-            </div>
-          )}
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <SummaryCard 
+                  title="Total Time Spent" 
+                  value={`${metrics.totalTimeSpent} min`}
+                  icon={<Clock className="w-6 h-6" />}
+                  colorClass="bg-blue-500"
+                />
+                <SummaryCard 
+                  title="Lessons Completed" 
+                  value={metrics.completedLessons}
+                  icon={<CheckCircle className="w-6 h-6" />}
+                  colorClass="bg-purple-500"
+                />
+                <SummaryCard 
+                  title="Active Courses" 
+                  value={metrics.coursesActive}
+                  icon={<BookOpen className="w-6 h-6" />}
+                  colorClass="bg-pink-500"
+                />
+              </div>
 
-          {/* Placeholder for Recharts in Phase 7 */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 flex items-center justify-center h-64 border-dashed">
-            <p className="text-slate-500 font-medium">Visualizations will be added in Phase 7</p>
-          </div>
+              {/* Charts Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Trend Chart */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
+                  <h3 className="text-lg font-semibold mb-6 text-slate-200">Learning Activity (Time Spent)</h3>
+                  <div className="h-72">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={metrics.trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorTime" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" stroke="#475569" fontSize={12} tickMargin={10} />
+                        <YAxis stroke="#475569" fontSize={12} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
+                          itemStyle={{ color: '#e2e8f0' }}
+                        />
+                        <Area type="monotone" dataKey="timeSpent" stroke="#a855f7" strokeWidth={3} fillOpacity={1} fill="url(#colorTime)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Distribution Chart */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
+                  <h3 className="text-lg font-semibold mb-6 text-slate-200">Course Completion</h3>
+                  <div className="h-72">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={metrics.distributionData}
+                          innerRadius={60}
+                          outerRadius={90}
+                          paddingAngle={5}
+                          dataKey="completedLessons"
+                        >
+                          {metrics.distributionData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
+                        />
+                        <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>
