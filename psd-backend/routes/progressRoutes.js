@@ -1,7 +1,8 @@
 import express from 'express';
 import ProgressEvent from '../models/ProgressEvent.js';
 import Course from '../models/Course.js';
-import { protect } from '../middleware/authMiddleware.js';
+import User from '../models/User.js';
+import { protect, mentor } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -41,7 +42,6 @@ router.get('/dashboard', protect, async (req, res) => {
     const completedLessons = events.filter((e) => e.status === 'completed').length;
 
     // Time-series data for Recharts (last 7 days dummy or actual)
-    // For simplicity, we format the actual events into a simple date array
     const trendDataMap = {};
     events.forEach(event => {
       const date = event.createdAt.toISOString().split('T')[0];
@@ -77,6 +77,34 @@ router.get('/dashboard', protect, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error fetching dashboard data' });
+  }
+});
+
+// @route   GET /api/progress/mentor
+// @desc    Get all students progress for mentor dashboard
+// @access  Private/Mentor
+router.get('/mentor', protect, mentor, async (req, res) => {
+  try {
+    const students = await User.find({ role: 'student' }).select('-passwordHash');
+    
+    const studentData = await Promise.all(students.map(async (student) => {
+      const events = await ProgressEvent.find({ userId: student._id });
+      const totalTimeSpent = events.reduce((acc, event) => acc + event.timeSpent, 0);
+      const completedLessons = events.filter((e) => e.status === 'completed').length;
+      
+      return {
+        _id: student._id,
+        name: student.name,
+        email: student.email,
+        totalTimeSpent,
+        completedLessons,
+        lastActive: events.length > 0 ? events[events.length - 1].createdAt : student.createdAt
+      };
+    }));
+
+    res.json(studentData);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching mentor data' });
   }
 });
 

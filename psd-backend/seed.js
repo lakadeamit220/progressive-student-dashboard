@@ -30,6 +30,7 @@ const seedDatabase = async () => {
       { name: 'Rohan Patil', email: 'rohan@gmail.com', passwordHash, role: 'student' },
       { name: 'Priya Joshi', email: 'priya@gmail.com', passwordHash, role: 'student' },
       { name: 'Sanjay Pawar', email: 'mentor@gmail.com', passwordHash, role: 'mentor' },
+      { name: 'Mentor Admin', email: 'mentoradmin@gmail.com', passwordHash, role: 'mentor' },
     ]);
 
     console.log('Creating courses...');

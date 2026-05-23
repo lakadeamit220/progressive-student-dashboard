@@ -10,6 +10,11 @@ export const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
       req.user = await User.findById(decoded.id).select('-passwordHash');
+      
+      if (!req.user) {
+        return res.status(401).json({ message: 'Not authorized, user not found' });
+      }
+
       next();
     } catch (error) {
       return res.status(401).json({ message: 'Not authorized, token failed' });
@@ -20,3 +25,13 @@ export const protect = async (req, res, next) => {
     return res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
+
+const mentor = (req, res, next) => {
+  if (req.user && req.user.role === 'mentor') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Not authorized as a mentor' });
+  }
+};
+
+export { protect, mentor };
