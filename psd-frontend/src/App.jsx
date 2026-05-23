@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Courses from './pages/Courses';
+import CoursePlayer from './pages/CoursePlayer';
 import History from './pages/History';
 
 const ProtectedRoute = ({ children }) => {
@@ -24,6 +26,7 @@ const App = () => {
 
   return (
     <Router>
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route 
@@ -39,6 +42,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Courses />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/courses/:courseId" 
+          element={
+            <ProtectedRoute>
+              <CoursePlayer />
             </ProtectedRoute>
           } 
         />
