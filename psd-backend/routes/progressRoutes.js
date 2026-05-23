@@ -1,6 +1,7 @@
 import express from 'express';
 import ProgressEvent from '../models/ProgressEvent.js';
 import Course from '../models/Course.js';
+import Lesson from '../models/Lesson.js';
 import User from '../models/User.js';
 import { protect, mentor } from '../middleware/authMiddleware.js';
 
@@ -69,11 +70,43 @@ router.get('/dashboard', protect, async (req, res) => {
       totalLessons: course.totalLessons,
     }));
 
+    // Calculate recommended next lesson
+    let recommendedLesson = null;
+    if (events.length > 0) {
+      // Find the most recently interacted course
+      const sortedEvents = [...events].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const lastActiveCourseId = sortedEvents[0].courseId;
+
+      // Get all lessons for this course, sorted
+      const courseLessons = await Lesson.find({ courseId: lastActiveCourseId }).sort('orderIndex');
+      
+      // Get all completed lesson IDs for this course by this user
+      const completedIds = events
+        .filter(e => e.courseId.toString() === lastActiveCourseId.toString() && e.status === 'completed')
+        .map(e => e.lessonId.toString());
+
+      // Find the first lesson that isn't completed
+      const nextLesson = courseLessons.find(l => !completedIds.includes(l._id.toString()));
+      
+      if (nextLesson) {
+        const courseInfo = await Course.findById(lastActiveCourseId);
+        if (courseInfo) {
+          recommendedLesson = {
+            courseId: courseInfo._id,
+            courseTitle: courseInfo.title,
+            lessonId: nextLesson._id,
+            lessonTitle: nextLesson.title
+          };
+        }
+      }
+    }
+
     res.json({
       totalTimeSpent,
       completedLessons,
       trendData,
       distributionData,
+      recommendedLesson,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error fetching dashboard data' });

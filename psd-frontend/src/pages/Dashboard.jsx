@@ -3,7 +3,8 @@ import useAuthStore from '../store/authStore';
 import api from '../api/axios';
 import Sidebar from '../components/Sidebar';
 import SummaryCard from '../components/SummaryCard';
-import { Clock, CheckCircle, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Clock, CheckCircle, BookOpen, ArrowRight, PlayCircle, MessageSquare } from 'lucide-react';
 
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -32,7 +33,8 @@ const Dashboard = () => {
           completedLessons: data.completedLessons,
           coursesActive: data.distributionData.length,
           trendData: data.trendData,
-          distributionData: data.distributionData
+          distributionData: data.distributionData,
+          recommendedLesson: data.recommendedLesson
         });
       } catch (error) {
         console.error('Failed to fetch dashboard data', error);
@@ -52,7 +54,7 @@ const Dashboard = () => {
         <div className="max-w-6xl mx-auto">
           <header className="mb-10">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">
-              Welcome back, {user?.name.split(' ')[0]}!
+              Welcome back, {user?.name?.split(' ')[0]}!
             </h1>
             <p className="text-slate-500">
               Here is your learning progress overview.
@@ -65,6 +67,48 @@ const Dashboard = () => {
             </div>
           ) : (
             <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                {metrics.recommendedLesson && (
+                  <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-2xl p-6 shadow-lg shadow-indigo-600/20 text-white flex flex-col justify-between gap-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">
+                        <PlayCircle className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-indigo-200 text-sm font-medium mb-1">Recommended Next Step in {metrics.recommendedLesson.courseTitle}</p>
+                        <h3 className="text-xl font-bold">{metrics.recommendedLesson.lessonTitle}</h3>
+                      </div>
+                    </div>
+                    <Link 
+                      to={`/courses/${metrics.recommendedLesson.courseId}`}
+                      className="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2"
+                    >
+                      Continue Learning
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                )}
+
+                {/* Static Mentor Recommendation */}
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-6 shadow-lg shadow-emerald-600/20 text-white flex flex-col justify-between gap-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">
+                      <MessageSquare className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-emerald-100 text-sm font-medium mb-1">Note from your Mentor</p>
+                      <h3 className="text-lg font-medium italic">"You're making excellent progress! Try to wrap up the foundational lessons this week so we can move on to the advanced projects."</h3>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">
+                      MA
+                    </div>
+                    <span className="text-sm font-medium text-emerald-50">Mentor Admin</span>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <SummaryCard 
                   title="Total Time Spent" 

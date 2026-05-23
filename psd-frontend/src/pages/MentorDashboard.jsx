@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import api from '../api/axios';
-import { Loader2, Users, Search, ChevronRight } from 'lucide-react';
+import { Loader2, Users, Search, ChevronRight, Download } from 'lucide-react';
 
 const MentorDashboard = () => {
   const [students, setStudents] = useState([]);
@@ -22,6 +22,37 @@ const MentorDashboard = () => {
     fetchMentorData();
   }, []);
 
+  const handleExportCSV = () => {
+    if (students.length === 0) return;
+
+    // Create CSV Header
+    const headers = ['Name', 'Email', 'Completed Lessons', 'Total Time Spent (mins)', 'Last Active'];
+    
+    // Create CSV Rows
+    const csvRows = students.map(s => {
+      return [
+        `"${s.name}"`,
+        `"${s.email}"`,
+        s.completedLessons,
+        s.totalTimeSpent,
+        `"${new Date(s.lastActive).toLocaleDateString()}"`
+      ].join(',');
+    });
+
+    // Combine Header and Rows
+    const csvContent = [headers.join(','), ...csvRows].join('\n');
+
+    // Create Blob and Download Link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'student_progress_export.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filteredStudents = students.filter(student => 
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     student.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -41,17 +72,27 @@ const MentorDashboard = () => {
               <p className="text-slate-500">Monitor your students' learning progress and engagement.</p>
             </div>
             
-            <div className="relative w-full md:w-72">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-slate-400" />
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+              <div className="relative w-full md:w-72">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-slate-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search students..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 shadow-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none text-sm"
+                />
               </div>
-              <input
-                type="text"
-                placeholder="Search students..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 shadow-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none text-sm"
-              />
+              <button
+                onClick={handleExportCSV}
+                disabled={students.length === 0}
+                className="w-full md:w-auto px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Download className="w-4 h-4" />
+                Export CSV
+              </button>
             </div>
           </header>
 
