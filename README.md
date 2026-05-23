@@ -150,6 +150,8 @@ The MongoDB database relies on four primary collections:
 6. Backend `protect` middleware verifies the token before granting access to `/api/progress/*` or `/api/courses/*`.
 7. Backend `mentor` middleware explicitly blocks any user whose role is not `mentor` from accessing `/api/progress/mentor`.
 
+> **Note on Endpoints:** For a complete list of endpoints, request bodies, and JSON responses, please refer to the dedicated [API_DOCUMENTATION.md](./API_DOCUMENTATION.md).
+
 ---
 
 ## Project Roadmap & History
