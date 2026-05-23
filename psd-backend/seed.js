@@ -38,6 +38,9 @@ const seedDatabase = async () => {
       { title: 'Full Stack Web Development', description: 'Learn MERN stack from scratch.', totalLessons: 5 },
       { title: 'Advanced React Patterns', description: 'Master React state and performance.', totalLessons: 4 },
       { title: 'Data Structures & Algorithms', description: 'Ace your coding interviews.', totalLessons: 3 },
+      { title: 'UI/UX Design Fundamentals', description: 'Design beautiful, user-centric interfaces.', totalLessons: 3 },
+      { title: 'Machine Learning Basics', description: 'Introduction to AI and Python ML libraries.', totalLessons: 4 },
+      { title: 'Advanced Node.js', description: 'Build scalable microservices and APIs.', totalLessons: 3 },
     ]);
 
     console.log('Creating lessons...');
@@ -59,6 +62,22 @@ const seedDatabase = async () => {
       { courseId: courses[2]._id, title: 'Arrays & Strings', orderIndex: 1 },
       { courseId: courses[2]._id, title: 'Linked Lists', orderIndex: 2 },
       { courseId: courses[2]._id, title: 'Trees & Graphs', orderIndex: 3 },
+
+      // Course 4: UI/UX
+      { courseId: courses[3]._id, title: 'Color Theory', orderIndex: 1 },
+      { courseId: courses[3]._id, title: 'Typography Basics', orderIndex: 2 },
+      { courseId: courses[3]._id, title: 'Wireframing in Figma', orderIndex: 3 },
+
+      // Course 5: Machine Learning
+      { courseId: courses[4]._id, title: 'Intro to Python for Data', orderIndex: 1 },
+      { courseId: courses[4]._id, title: 'Linear Regression', orderIndex: 2 },
+      { courseId: courses[4]._id, title: 'Classification Models', orderIndex: 3 },
+      { courseId: courses[4]._id, title: 'Neural Networks 101', orderIndex: 4 },
+
+      // Course 6: Advanced Node
+      { courseId: courses[5]._id, title: 'Event Loop Deep Dive', orderIndex: 1 },
+      { courseId: courses[5]._id, title: 'Streams and Buffers', orderIndex: 2 },
+      { courseId: courses[5]._id, title: 'Microservices Architecture', orderIndex: 3 },
     ];
     const lessons = await Lesson.insertMany(lessonsData);
 
