@@ -16,11 +16,18 @@ const CoursePlayer = () => {
 
   useEffect(() => {
     const fetchLessons = async () => {
-      try {
-        const { data } = await api.get(`/courses/${courseId}/lessons`);
-        setLessons(data);
-        if (data.length > 0) {
-          setCurrentLesson(data[0]);
+        const [lessonsRes, completedRes] = await Promise.all([
+          api.get(`/courses/${courseId}/lessons`),
+          api.get(`/progress/course/${courseId}/completed`)
+        ]);
+        
+        setLessons(lessonsRes.data);
+        setCompletedLessonIds(new Set(completedRes.data));
+
+        if (lessonsRes.data.length > 0) {
+          // Find the first uncompleted lesson to show by default
+          const firstUncompleted = lessonsRes.data.find(l => !completedRes.data.includes(l._id));
+          setCurrentLesson(firstUncompleted || lessonsRes.data[0]);
         }
       } catch (error) {
         console.error('Failed to fetch lessons:', error);

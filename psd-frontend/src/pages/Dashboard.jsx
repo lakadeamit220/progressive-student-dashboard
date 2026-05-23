@@ -4,7 +4,7 @@ import api from '../api/axios';
 import Sidebar from '../components/Sidebar';
 import SummaryCard from '../components/SummaryCard';
 import { Link } from 'react-router-dom';
-import { Clock, CheckCircle, BookOpen, ArrowRight, PlayCircle, MessageSquare } from 'lucide-react';
+import { Clock, CheckCircle, BookOpen, ArrowRight, PlayCircle } from 'lucide-react';
 
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -67,47 +67,48 @@ const Dashboard = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                {metrics.recommendedLesson && (
-                  <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-2xl p-6 shadow-lg shadow-indigo-600/20 text-white flex flex-col justify-between gap-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">
-                        <PlayCircle className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-indigo-200 text-sm font-medium mb-1">Recommended Next Step in {metrics.recommendedLesson.courseTitle}</p>
-                        <h3 className="text-xl font-bold">{metrics.recommendedLesson.lessonTitle}</h3>
-                      </div>
-                    </div>
-                    <Link 
-                      to={`/courses/${metrics.recommendedLesson.courseId}`}
-                      className="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2"
-                    >
-                      Continue Learning
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                  </div>
-                )}
-
-                {/* Static Mentor Recommendation */}
-                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-6 shadow-lg shadow-emerald-600/20 text-white flex flex-col justify-between gap-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">
-                      <MessageSquare className="w-6 h-6 text-white" />
+              {metrics.mentorRecommendation ? (
+                <div className="bg-gradient-to-r from-pink-500 to-rose-600 rounded-2xl p-6 mb-8 shadow-lg shadow-pink-500/20 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-inner flex-shrink-0">
+                      <BookOpen className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-emerald-100 text-sm font-medium mb-1">Note from your Mentor</p>
-                      <h3 className="text-lg font-medium italic">"You're making excellent progress! Try to wrap up the foundational lessons this week so we can move on to the advanced projects."</h3>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">Mentor Nudge</span>
+                      </div>
+                      <h3 className="text-xl font-bold mb-1">{metrics.mentorRecommendation.courseTitle}</h3>
+                      <p className="text-pink-100 text-sm font-medium italic">"{metrics.mentorRecommendation.message}"</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">
-                      MA
-                    </div>
-                    <span className="text-sm font-medium text-emerald-50">Mentor Admin</span>
-                  </div>
+                  <Link 
+                    to={`/courses/${metrics.mentorRecommendation.courseId}`}
+                    className="px-6 py-3 bg-white text-rose-600 font-bold rounded-xl hover:bg-rose-50 transition-colors flex items-center gap-2 whitespace-nowrap shadow-sm"
+                  >
+                    Start Recommended Course
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
-              </div>
+              ) : metrics.recommendedLesson && (
+                <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-2xl p-6 mb-8 shadow-lg shadow-indigo-600/20 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <PlayCircle className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-indigo-200 text-sm font-medium mb-1">Recommended Next Step in {metrics.recommendedLesson.courseTitle}</p>
+                      <h3 className="text-xl font-bold">{metrics.recommendedLesson.lessonTitle}</h3>
+                    </div>
+                  </div>
+                  <Link 
+                    to={`/courses/${metrics.recommendedLesson.courseId}`}
+                    className="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 transition-colors flex items-center gap-2 whitespace-nowrap"
+                  >
+                    Continue Learning
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                 <SummaryCard 

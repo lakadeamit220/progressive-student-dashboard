@@ -3,6 +3,7 @@ import ProgressEvent from '../models/ProgressEvent.js';
 import Course from '../models/Course.js';
 import Lesson from '../models/Lesson.js';
 import User from '../models/User.js';
+import Recommendation from '../models/Recommendation.js';
 import { protect, mentor } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -25,6 +26,44 @@ router.post('/event', protect, async (req, res) => {
     res.status(201).json(progressEvent);
   } catch (error) {
     res.status(500).json({ message: 'Server error logging progress' });
+  }
+});
+
+// @route   POST /api/progress/recommend
+// @desc    Mentor recommends a course to a student
+// @access  Private/Mentor
+router.post('/recommend', protect, mentor, async (req, res) => {
+  try {
+    const { studentId, courseId, message } = req.body;
+    
+    // Upsert so there's only one active recommendation per student
+    const recommendation = await Recommendation.findOneAndUpdate(
+      { studentId },
+      { mentorId: req.user._id, courseId, message },
+      { new: true, upsert: true }
+    );
+
+    res.status(201).json(recommendation);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error saving recommendation' });
+  }
+});
+
+// @route   GET /api/progress/course/:courseId/completed
+// @desc    Get all completed lesson IDs for a specific course
+// @access  Private
+router.get('/course/:courseId/completed', protect, async (req, res) => {
+  try {
+    const events = await ProgressEvent.find({
+      userId: req.user._id,
+      courseId: req.params.courseId,
+      status: 'completed'
+    });
+    
+    const completedLessonIds = events.map(e => e.lessonId);
+    res.json(completedLessonIds);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching completed lessons' });
   }
 });
 
@@ -101,12 +140,25 @@ router.get('/dashboard', protect, async (req, res) => {
       }
     }
 
+    // Fetch Mentor Recommendation if it exists
+    const recommendationDoc = await Recommendation.findOne({ studentId: userId }).populate('courseId');
+    let mentorRecommendation = null;
+    
+    if (recommendationDoc && recommendationDoc.courseId) {
+      mentorRecommendation = {
+        courseId: recommendationDoc.courseId._id,
+        courseTitle: recommendationDoc.courseId.title,
+        message: recommendationDoc.message,
+      };
+    }
+
     res.json({
       totalTimeSpent,
       completedLessons,
       trendData,
       distributionData,
       recommendedLesson,
+      mentorRecommendation,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error fetching dashboard data' });

@@ -1,25 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import api from '../api/axios';
-import { Loader2, Users, Search, ChevronRight, Download } from 'lucide-react';
+import { Loader2, Users, Search, ChevronRight, Download, MessageSquare, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const MentorDashboard = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [courses, setCourses] = useState([]);
+  const [recommendModal, setRecommendModal] = useState({ isOpen: false, student: null });
+  const [recommendForm, setRecommendForm] = useState({ courseId: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const fetchMentorData = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await api.get('/progress/mentor');
-        setStudents(data);
+        const [mentorRes, coursesRes] = await Promise.all([
+          api.get('/progress/mentor'),
+          api.get('/courses')
+        ]);
+        setStudents(mentorRes.data);
+        setCourses(coursesRes.data);
       } catch (error) {
-        console.error('Failed to fetch mentor data', error);
+        console.error('Failed to fetch data', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchMentorData();
+    fetchData();
   }, []);
 
   const handleExportCSV = () => {
@@ -57,6 +66,25 @@ const MentorDashboard = () => {
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     student.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const submitRecommendation = async () => {
+    if (!recommendForm.courseId) return toast.error("Please select a course");
+    setSubmitting(true);
+    try {
+      await api.post('/progress/recommend', {
+        studentId: recommendModal.student._id,
+        courseId: recommendForm.courseId,
+        message: recommendForm.message || 'Your mentor recommends you check out this course!'
+      });
+      toast.success(`Recommendation sent to ${recommendModal.student.name}!`);
+      setRecommendModal({ isOpen: false, student: null });
+      setRecommendForm({ courseId: '', message: '' });
+    } catch (error) {
+      toast.error("Failed to send recommendation");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex">
@@ -146,10 +174,15 @@ const MentorDashboard = () => {
                             {new Date(student.lastActive).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button className="text-indigo-600 hover:text-indigo-900 inline-flex items-center group">
-                              View Profile
-                              <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                            </button>
+                            <div className="flex items-center justify-end gap-3">
+                              <button 
+                                onClick={() => setRecommendModal({ isOpen: true, student })}
+                                className="text-indigo-600 hover:text-indigo-900 inline-flex items-center group transition-colors"
+                              >
+                                <MessageSquare className="w-4 h-4 mr-1" />
+                                Recommend
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -161,6 +194,56 @@ const MentorDashboard = () => {
           )}
         </div>
       </main>
+
+      {/* Recommendation Modal */}
+      {recommendModal.isOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-900">Recommend Course</h3>
+              <button onClick={() => setRecommendModal({ isOpen: false, student: null })} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-sm text-slate-500 mb-6">Send a customized course recommendation directly to <strong>{recommendModal.student?.name}</strong>.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Select Course</label>
+                <select 
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={recommendForm.courseId}
+                  onChange={(e) => setRecommendForm({...recommendForm, courseId: e.target.value})}
+                >
+                  <option value="">-- Choose a course --</option>
+                  {courses.map(c => (
+                    <option key={c._id} value={c._id}>{c.title}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Custom Message (Optional)</label>
+                <textarea 
+                  rows="3"
+                  placeholder="I noticed you struggling with X, this course might help!"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={recommendForm.message}
+                  onChange={(e) => setRecommendForm({...recommendForm, message: e.target.value})}
+                ></textarea>
+              </div>
+              <div className="pt-2">
+                <button 
+                  onClick={submitRecommendation}
+                  disabled={submitting}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-70 flex items-center justify-center"
+                >
+                  {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send Recommendation'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
