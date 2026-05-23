@@ -16,6 +16,7 @@ const CoursePlayer = () => {
 
   useEffect(() => {
     const fetchLessons = async () => {
+      try {
         const [lessonsRes, completedRes] = await Promise.all([
           api.get(`/courses/${courseId}/lessons`),
           api.get(`/progress/course/${courseId}/completed`)
