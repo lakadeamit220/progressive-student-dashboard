@@ -1,4 +1,4 @@
-# 🚀 Progressive Student Dashboard
+# Progressive Student Dashboard
 
 A full-stack, comprehensive web application designed to track student progress, visualize learning insights, and provide mentors with actionable data. Built with modern web technologies, this platform delivers a premium, distraction-free learning experience.
 
@@ -6,13 +6,13 @@ A full-stack, comprehensive web application designed to track student progress, 
 
 ---
 
-## 📖 Project Overview
+## Project Overview
 
 The Progressive Student Dashboard bridges the gap between learning and analytics. It provides two distinct portals:
 1. **Student Portal**: Where learners can discover courses, consume content, and visualize their daily learning habits.
 2. **Mentor Portal**: Where teachers can monitor the progress of their entire classroom, identify struggling students, and track overall engagement.
 
-### ✨ Key Features
+### Key Features
 - **Role-Based Access Control (RBAC)**: Secure routing and API endpoints that differentiate between `student` and `mentor` roles.
 - **Interactive Course Player**: A distraction-free environment to watch lessons, with a "Mark as Complete" system that dynamically updates backend progress metrics.
 - **Advanced Data Visualization**: Real-time charts powered by Recharts.
@@ -24,7 +24,7 @@ The Progressive Student Dashboard bridges the gap between learning and analytics
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 This project is built using the **MERN** stack, augmented with modern frontend libraries.
 
@@ -48,7 +48,7 @@ This project is built using the **MERN** stack, augmented with modern frontend l
 
 ---
 
-## 🚦 How to Run Locally
+## How to Run Locally
 
 Follow these instructions to get the project running on your local machine. This guide assumes you have no prior setup.
 
@@ -105,13 +105,13 @@ npm run dev
 
 ---
 
-## 🧪 Testing the Application (Test Users)
+## Testing the Application (Test Users)
 
 Open your browser and navigate to `http://localhost:5173`. You will see the beautiful Landing Page. Click **"Sign In"** or **"Start Learning Now"**.
 
 Use the following seeded credentials to explore different sides of the application:
 
-### 🎓 Student Accounts
+### Student Accounts
 Students have access to the Dashboard (Charts), Course Catalog, Course Player, and History.
 
 | Name | Email | Password |
@@ -123,7 +123,7 @@ Students have access to the Dashboard (Charts), Course Catalog, Course Player, a
 
 *Note: The `aditya@gmail.com` account comes pre-loaded with extensive progress data so you can see the charts in action immediately!*
 
-### 👨‍🏫 Mentor Accounts
+### Mentor Accounts
 Mentors have access to a specialized "Mentor Dashboard" to monitor the students.
 
 | Name | Email | Password |
@@ -132,7 +132,7 @@ Mentors have access to a specialized "Mentor Dashboard" to monitor the students.
 
 ---
 
-## 🗄️ Database Schema & Architecture
+## Database Schema & Architecture
 
 The MongoDB database relies on four primary collections:
 
@@ -141,7 +141,7 @@ The MongoDB database relies on four primary collections:
 3. **Lessons**: Linked to a Course via `courseId`. Contains the lesson title and sequence order.
 4. **ProgressEvents**: The core analytics engine. Every time a student interacts with a lesson, an event is created linking the `userId`, `courseId`, and `lessonId`, along with `timeSpent` and `status` (`in-progress` or `completed`).
 
-### 🔐 Authentication Flow
+### Authentication Flow
 1. User submits login form.
 2. Backend verifies password via `bcrypt.compare()`.
 3. Backend issues a JWT signed with `JWT_SECRET`.
@@ -152,7 +152,7 @@ The MongoDB database relies on four primary collections:
 
 ---
 
-## 🗺️ Project Roadmap & History
+## Project Roadmap & History
 
 This project was built iteratively in distinct phases:
 
@@ -163,14 +163,14 @@ This project was built iteratively in distinct phases:
 
 ---
 
-## 🟢 Current Status
+## Current Status
 **Status: Production-Ready MVP**
 The application is currently fully functional as a Minimum Viable Product. 
 - The backend API is stable, secure, and correctly handles relational database queries.
 - Authentication and RBAC middleware successfully intercept unauthorized requests.
 - The frontend state management is clean, UI components are responsive, and data visualizations accurately reflect the database.
 
-## 🚀 Possible Future Improvements
+## Possible Future Improvements
 While the foundation is strong, the following features could be implemented to scale the application:
 
 1. **Gamification (Streaks & Badges):** 
@@ -186,5 +186,5 @@ While the foundation is strong, the following features could be implemented to s
 
 ---
 
-## 🤝 Contributing
+## Contributing
 Feel free to fork this repository and submit Pull Requests. For major changes, please open an issue first to discuss what you would like to change.
