@@ -6,7 +6,7 @@ import SummaryCard from '../components/SummaryCard';
 import { Clock, CheckCircle, BookOpen } from 'lucide-react';
 
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
 
@@ -93,17 +93,41 @@ const Dashboard = () => {
                   <h3 className="text-lg font-semibold mb-6 text-slate-800">Learning Activity (Time Spent)</h3>
                   <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={metrics.trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barSize={32}>
-                        <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} tickMargin={10} />
-                        <YAxis stroke="#94a3b8" fontSize={12} />
+                      <LineChart data={metrics.trendData} margin={{ top: 20, right: 20, left: -20, bottom: 0 }}>
+                        <XAxis 
+                          dataKey="date" 
+                          stroke="#94a3b8" 
+                          fontSize={12} 
+                          tickMargin={12} 
+                          axisLine={false} 
+                          tickLine={false}
+                        />
+                        <YAxis 
+                          stroke="#94a3b8" 
+                          fontSize={12} 
+                          axisLine={false} 
+                          tickLine={false} 
+                        />
                         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                         <Tooltip 
-                          contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '8px' }}
-                          itemStyle={{ color: '#0f172a' }}
-                          cursor={{ fill: '#f8fafc' }}
+                          contentStyle={{ 
+                            backgroundColor: '#ffffff', 
+                            borderColor: '#e2e8f0', 
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                          }}
+                          itemStyle={{ color: '#0f172a', fontWeight: '600' }}
+                          cursor={{ stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '4 4' }}
                         />
-                        <Bar dataKey="timeSpent" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                      </BarChart>
+                        <Line 
+                          type="monotone" 
+                          dataKey="timeSpent" 
+                          stroke="#6366f1" 
+                          strokeWidth={4} 
+                          dot={{ r: 4, fill: '#6366f1', strokeWidth: 2, stroke: '#ffffff' }}
+                          activeDot={{ r: 8, fill: '#4f46e5', strokeWidth: 2, stroke: '#ffffff' }}
+                        />
+                      </LineChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
