@@ -45,16 +45,16 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex">
       <Sidebar />
       
       <main className="flex-1 ml-64 p-8">
         <div className="max-w-6xl mx-auto">
           <header className="mb-10">
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Welcome back, {user?.name.split(' ')[0]}! 👋
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              Welcome back, {user?.name.split(' ')[0]}!
             </h1>
-            <p className="text-slate-400">
+            <p className="text-slate-500">
               Here is your learning progress overview.
             </p>
           </header>
@@ -89,33 +89,33 @@ const Dashboard = () => {
               {/* Charts Section */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Trend Chart */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
-                  <h3 className="text-lg font-semibold mb-6 text-slate-200">Learning Activity (Time Spent)</h3>
+                <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-6 text-slate-800">Learning Activity (Time Spent)</h3>
                   <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={metrics.trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorTime" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
-                        <XAxis dataKey="date" stroke="#475569" fontSize={12} tickMargin={10} />
-                        <YAxis stroke="#475569" fontSize={12} />
-                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                        <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} tickMargin={10} />
+                        <YAxis stroke="#94a3b8" fontSize={12} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                         <Tooltip 
-                          contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
-                          itemStyle={{ color: '#e2e8f0' }}
+                          contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '8px' }}
+                          itemStyle={{ color: '#0f172a' }}
                         />
-                        <Area type="monotone" dataKey="timeSpent" stroke="#a855f7" strokeWidth={3} fillOpacity={1} fill="url(#colorTime)" />
+                        <Area type="monotone" dataKey="timeSpent" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorTime)" />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
                 {/* Distribution Chart */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-lg">
-                  <h3 className="text-lg font-semibold mb-6 text-slate-200">Course Completion</h3>
+                <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                  <h3 className="text-lg font-semibold mb-6 text-slate-800">Course Completion</h3>
                   <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -131,7 +131,7 @@ const Dashboard = () => {
                           ))}
                         </Pie>
                         <Tooltip 
-                          contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '8px' }}
+                          contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '8px', color: '#0f172a' }}
                         />
                         <Legend verticalAlign="bottom" height={36} iconType="circle" />
                       </PieChart>
